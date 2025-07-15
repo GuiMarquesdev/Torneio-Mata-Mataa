@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚽ Sistema Mata-Mata - Chaveamento</title>
+    <style>
+        /* ===== RESET E CONFIGURAÇÕES BÁSICAS ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* ===== CONTAINER PRINCIPAL ===== */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        /* ===== CABEÇALHO ===== */
+        .header {
+            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        /* ===== CONTEÚDO PRINCIPAL ===== */
+        .main-content {
+            padding: 30px;
+        }
+
+        /* ===== SEÇÕES DE FORMULÁRIO ===== */
+        .form-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 5px solid #dc3545;
+        }
+
+        .form-section h3 {
+            color: #dc3545;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .form-group select,
+        .form-group input {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #dc3545;
+        }
+
+        /* ===== INFORMAÇÕES DO TORNEIO ===== */
+        .tournament-info {
+            display: none;
+            background: #fff5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .info-item .label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .info-item .value {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #dc3545;
+        }
+
+        /* ===== SELEÇÃO DE TIMES ===== */
+        .team-selection {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .team-slot {
+            padding: 10px;
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .team-slot:hover {
+            border-color: #dc3545;
+            background: #fff5f5;
+            transform: translateY(-2px);
+        }
+
+        .team-slot.selected {
+            border-color: #28a745;
+            background: #d4edda;
+            color: #155724;
+            font-weight: bold;
+        }
+
+        /* ===== ESTILOS DO CHAVEAMENTO ===== */
+        .bracket-section {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .bracket-container {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            overflow-x: auto;
+            border: 3px solid #dc3545;
+        }
+
+        .bracket {
+            display: flex;
+            justify-content: space-between;
+            min-width: 800px;
+            gap: 50px;
+        }
+
+        .round {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            min-height: 400px;
+        }
+
+        .round h4 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #dc3545;
+            font-size: 1.2em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* ===== PARTIDAS DO CHAVEAMENTO ===== */
+        .match {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border: 2px solid #e9ecef;
+            transition: all 0.3s;
+            min-width: 200px;
+        }
+
+        .match:hover {
+            border-color: #dc3545;
+            transform: translateY(-2px);
+        }
+
+        .match.completed {
+            border-color: #28a745;
+            background: linear-gradient(135deg, #d4edda, #f8fff9);
+        }
+
+        .team {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 6px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .team:hover {
+            background: #f8f9fa;
+        }
+
+        .team.winner {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            font-weight: bold;
+            transform: scale(1.02);
+        }
+
+        .team.loser {
+            background: #f8f9fa;
+            color: #6c757d;
+            opacity: 0.7;
+        }
+
+        .team-name {
+            font-weight: 600;
+            flex-grow: 1;
+        }
+
+        .team-score {
+            font-size: 1.2em;
+            font-weight: bold;
+            background: #e9ecef;
+            padding: 4px 8px;
+            border-radius: 4px;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .team.winner .team-score {
+            background: rgba(255,255,255,0.3);
+            color: white;
+        }
+
+        .match-vs {
+            text-align: center;
+            color: #dc3545;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin: 5px 0;
+        }
+
+        .empty-slot {
+            background: #f8f9fa;
+            color: #6c757d;
+            font-style: italic;
+            border: 2px dashed #dee2e6;
+        }
+
+        /* ===== SEÇÃO DO CAMPEÃO ===== */
+        .champion-section {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            border-radius: 15px;
+            margin-top: 30px;
+            display: none;
+            border: 3px solid #f39c12;
+        }
+
+        .champion-section h2 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .champion-team {
+            font-size: 2em;
+            font-weight: bold;
+            color: #dc3545;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        /* ===== TABELA DE PONTOS ===== */
+        .points-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 5px solid #17a2b8;
+        }
+
+        .points-section h3 {
+            color: #17a2b8;
+            margin-bottom: 15px;
+        }
+
+        .points-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .points-table th,
+        .points-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .points-table th {
+            background: #17a2b8;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .points-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .points-table tr:first-child td {
+            font-weight: bold;
+        }
+
+        /* ===== BOTÕES ===== */
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #dc3545, #fd7e14);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d, #868e96);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        /* ===== RESPONSIVIDADE ===== */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .bracket {
+                min-width: 600px;
+            }
+            
+            .match {
+                min-width: 150px;
+                padding: 10px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .team-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+
+            .champion-section h2 {
+                font-size: 2em;
+            }
+
+            .champion-team {
+                font-size: 1.5em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .bracket {
+                min-width: 400px;
+                gap: 20px;
+            }
+
+            .match {
+                min-width: 120px;
+                padding: 8px;
+            }
+
+            .team-name {
+                font-size: 0.9em;
+            }
+
+            .team-score {
+                font-size: 1em;
+                padding: 2px 6px;
+            }
+
+            .round h4 {
+                font-size: 1em;
+                padding: 8px;
+            }
+        }
+
+        /* ===== ANIMAÇÕES E EFEITOS ===== */
+        .match.completed {
+            animation: completeMatch 0.5s ease-in-out;
+        }
+
+        @keyframes completeMatch {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 8px 16px rgba(40, 167, 69, 0.3);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            }
+        }
+
+        .champion-section {
+            animation: championReveal 1s ease-in-out;
+        }
+
+        @keyframes championReveal {
+            0% {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== MELHORIAS VISUAIS ===== */
+        .team-slot:active {
+            transform: scale(0.98);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .match:hover .team {
+            background: rgba(220, 53, 69, 0.1);
+        }
+
+        .points-table tbody tr:nth-child(1) {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+        }
+
+        .points-table tbody tr:nth-child(2) {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        }
+
+        .points-table tbody tr:nth-child(3) {
+            background: linear-gradient(135deg, #fff5f5, #ffe6e6);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ===== CABEÇALHO ===== -->
+        <div class="header">
+            <h1>⚽ Sistema Mata-Mata</h1>
+            <p>Gerencie chaveamentos de eliminação direta</p>
+        </div>
+
+        <div class="main-content">
+            <!-- ===== SEÇÃO DE CONFIGURAÇÃO ===== -->
+            <div class="form-section">
+                <h3>🏆 Configuração do Torneio</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tournamentSelect">Tipo de Torneio:</label>
+                        <select id="tournamentSelect" onchange="updateTournamentInfo()">
+                            <option value="">-- Escolha um formato --</option>
+                            <option value="8teams">Mata-mata 8 Times</option>
+                            <option value="16teams">Mata-mata 16 Times</option>
+                            <option value="4teams">Semifinal (4 Times)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pointsPerWin">Pontos por Vitória:</label>
+                        <select id="pointsPerWin" onchange="calculateAllPoints()">
+                            <option value="10">10 pontos</option>
+                            <option value="15">15 pontos</option>
+                            <option value="20">20 pontos</option>
+                            <option value="25">25 pontos</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- ===== INFORMAÇÕES DO TORNEIO ===== -->
+                <div id="tournamentInfo" class="tournament-info">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="label">Times</div>
+                            <div class="value" id="totalTeams">0</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="label">Fases</div>
+                            <div class="value" id="totalRounds">0</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="label">Partidas</div>
+                            <div class="value" id="totalMatches">0</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="label">Campeão</div>
+                            <div class="value" id="championTeam">Pendente</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== SELEÇÃO DE TIMES ===== -->
+            <div id="teamSelectionSection" class="team-selection" style="display: none;">  <!--(none),faz a section pararecer ou não aparecer para o usuario-->
+                <h4>🎯 Selecione os Times Participantes</h4>
+                <p>Clique nos times para selecioná-los (máximo: <span id="maxTeams">8</span>)</p>
+                <div class="team-grid" id="teamGrid">
+                    <!-- Times serão gerados dinamicamente pelo JavaScript -->
+                </div>
+                <div style="margin-top: 15px; text-align: center;">
+                    <span>Times selecionados: <strong id="selectedCount">0</strong></span>
+                </div>
+            </div>
+
+            <!-- ===== CHAVEAMENTO ===== -->
+            <div id="bracketSection" class="bracket-section">
+                <h3>🏆 Chaveamento do Torneio</h3>
+                <div class="bracket-container">
+                    <div class="bracket" id="bracket">
+                        <!-- Chaveamento será gerado dinamicamente pelo JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== SEÇÃO DO CAMPEÃO ===== -->
+            <div id="championSection" class="champion-section">
+                <h2>🏆 CAMPEÃO</h2>
+                <div class="champion-team" id="championName">Time Vencedor</div>
+                <p>Parabéns pela conquista!</p>
+            </div>
+
+            <!-- ===== TABELA DE PONTOS ===== -->
+            <div id="pointsSection" class="points-section" style="display: none;">
+                <h3>📊 Pontuação dos Times</h3>
+                <table class="points-table" id="pointsTable">
+                    <thead>
+                        <tr>
+                            <th>Posição</th>
+                            <th>Time</th>
+                            <th>Vitórias</th>
+                            <th>Fase Alcançada</th>
+                            <th>Pontos</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pointsTableBody">
+                        <!-- Dados serão inseridos dinamicamente pelo JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ===== BOTÕES DE AÇÃO ===== -->
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="resetTournament()">🔄 Resetar Torneio</button>
+                <button class="btn btn-primary" id="generateBtn" onclick="generateBracket()" disabled>⚡ Gerar Chaveamento</button>
+                <button class="btn btn-success" id="simulateBtn" onclick="simulateMatch()" disabled>🎲 Simular Próxima Partida</button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- ===== SCRIPT JavaScript será inserido aqui ===== -->
+    <script>
+
+/*  variaveis globais, Objetivo: Armazenar dados cruciais que serão acessados e modificados por diferentes funções ao longo do sistema.*/
+
+
+let selectedTeams = [];
+let matchResults = {};
+let bracketData = {};
+let pointsMultiplier = 10;/*Para calcular a pontuação dos vencedores dos confrontos*/
+
+
+
+//TODO: Estrutura que representa o chaveamento completo
+//TODO: Lista de todos os times disponiveis
+//TODO: Array com times selecionados pelo o usuario
+//TODO: Informações sobre o resultado das partidas
+//TODO: Miltiplicador de pontuação
+
+
+/*  configurações do torneio */
+
+/* FUNÇÃO PRINCIPAL DE CONFIGURAÇÃO */
+
+/*Array de strings com todos os nomes de times disponíveis.*/
+const allTeams =[ 
+    "Arsenal","Aston Villa" ,"AFC Bournemouth","Brentford","Brighton & Hove Albion","Chelsea","Crystal Palace","Everton","Fulham","Ipswich Town","Leicester City","Liverpool","Manchester City","Manchester United","Newcastle United","Nottingham Forest","Southampton","Tottenham Hotspur","West Ham United","Wolverhampton Wanderers" 
+];
+
+
+/*Estrutura de Configurações do Torneio*/
+const tournamentConfigs = {
+    "16teams": {
+        totalTeams: 16,
+        rounds: ["Oitavas de Final", "Quartas de Final", "Semifinal", "Final"],
+        matchesPerRound: [8, 4, 2, 1]
+    },
+    "8teams": {
+        totalTeams: 8,
+        rounds: ["Quartas de Final", "Semifinal", "Final"],
+        matchesPerRound: [4, 2, 1]
+    },
+    "4teams": {
+        totalTeams: 4,
+        rounds: ["Semifinal", "Final"],
+        matchesPerRound: [2, 1]
+    }
+};
+
+
+function updateTournamentInfo () {
+    const tournamentSelect = document.getElementById('tournamentSelect');
+    const tournamentType = tournamentSelect.value;
+    
+    const infoSection = document.getElementById('tournamentInfo');
+    const teamSelectionSection = document.getElementById('teamSelectionSection'); 
+    const maxTeamsSpan = document.getElementById('maxTeams');
+    const generateBtn = document.getElementById('generateBtn'); 
+   
+    // ✅ CORREÇÃO: Lógica para quando NENHUM tipo de torneio é selecionado (opção padrão "")
+    if (tournamentType === "") {
+        infoSection.style.display = 'none'; // Esconde a seção de informações
+        teamSelectionSection.style.display = 'none'; // Esconde a seleção de times
+        document.getElementById('bracketSection').style.display = 'none'; // Esconder chaveamento
+        document.getElementById('championSection').style.display = 'none'; // Esconder campeão
+        document.getElementById('pointsSection').style.display = 'none'; // Esconder pontos
+
+        generateBtn.disabled = true;
+        document.getElementById('simulateBtn').disabled = true;
+
+        document.getElementById('totalTeams').textContent = '0';
+        document.getElementById('totalRounds').textContent = '0';
+        document.getElementById('totalMatches').textContent = '0';
+        document.getElementById('championTeam').textContent = 'Pendente';
+        document.getElementById('selectedCount').textContent = '0'; 
+        document.getElementById('teamGrid').innerHTML = ''; 
+        
+        selectedTeams = []; 
+        bracketData = {}; 
+        
+        return; // Sai da função APENAS SE A OPÇÃO FOR VAZIA
+    }
+
+    // ✅ CORREÇÃO: Este bloco agora é executado APENAS se um tournamentType VÁLIDO for selecionado
+    const config = tournamentConfigs[tournamentType]; // Acessar as configurações do torneio
+    if (!config) { // Verificação de segurança caso o tipo não exista (embora o HTML evite isso)
+        console.error("Configuração de torneio não encontrada para:", tournamentType);
+        return;
+    }
+   
+    // Atualiza os elementos na seção 'tournament-info' com base na configuração
+    document.getElementById('totalTeams').textContent = config.totalTeams;
+    document.getElementById('totalRounds').textContent = config.rounds.length;
+    document.getElementById('totalMatches').textContent = config.totalTeams - 1; // N-1 partidas
+    document.getElementById('championTeam').textContent = 'Pendente'; // Sempre pendente ao iniciar/mudar o torneio
+
+    infoSection.style.display = 'block'; // Exibe a seção de informações do torneio
+    maxTeamsSpan.textContent = config.totalTeams; // Atualiza o texto de máximo de times na seção de seleção de times
+    teamSelectionSection.style.display = 'block'; // Exibe a seção de seleção de times
+
+    // Reseta e preenche o grid de times para a nova seleção
+    selectedTeams = []; // Limpa os times selecionados anteriormente
+    document.getElementById('selectedCount').textContent = selectedTeams.length;
+    generateBtn.disabled = true;
+    document.getElementById('simulateBtn').disabled = true; // Certificar que simular está desabilitado
+    
+    populateTeamGrid(config.totalTeams);
+}
+
+function selectTeam(teamName, element, maxTeamsToSelect) {
+    const generateBtn = document.getElementById('generateBtn');
+    const selectedCountSpan = document.getElementById('selectedCount');
+
+    if (element.classList.contains('selected')) {
+        // Desseleciona o time
+        element.classList.remove('selected');
+        selectedTeams = selectedTeams.filter(team => team !== teamName);
+    } else {
+        // Seleciona o time, se ainda houver espaço
+        if (selectedTeams.length < maxTeamsToSelect) {
+            element.classList.add('selected');
+            selectedTeams.push(teamName);
+        } else {
+            alert(`Você já selecionou o máximo de ${maxTeamsToSelect} times para este torneio.`);
+        }
+    }
+    document.getElementById('selectedCount').textContent = selectedTeams.length;
+
+    // Habilita o botão Gerar Chaveamento se o número de times estiver correto
+    if (selectedTeams.length === maxTeamsToSelect) {
+        generateBtn.disabled = false;
+    } else {
+        generateBtn.disabled = true;
+    }
+}
+
+function populateTeamGrid(maxTeamsToSelect) {
+    const teamGrid = document.getElementById('teamGrid');
+    teamGrid.innerHTML = ''; // Limpa o grid
+
+    allTeams.forEach(team => {
+        const teamSlot = document.createElement('div');
+        teamSlot.classList.add('team-slot');
+        teamSlot.textContent = team;
+        teamSlot.onclick = () => selectTeam(team, teamSlot, maxTeamsToSelect);
+        teamGrid.appendChild(teamSlot);// Adiciona o slot de time ao grid
+    });
+}
+
+
+
+function renderPointsTable(teamPoints) {
+    const pointsTableBody = document.getElementById('pointsTableBody');
+    pointsTableBody.innerHTML = ''; 
+
+    // Converte o objeto em array e ordena por pontos
+    const sortedTeams = Object.entries(teamPoints).sort(([, a], [, b]) => b.points - a.points);
+
+    sortedTeams.forEach(([teamName, data], index) => { 
+        const row = pointsTableBody.insertRow();
+        row.insertCell().textContent = index + 1; // Posição
+        row.insertCell().textContent = teamName;
+        row.insertCell().textContent = data.wins;
+        row.insertCell().textContent = data.faseReached;
+        row.insertCell().textContent = data.points;
+    });
+
+    document.getElementById('pointsSection').style.display = 'block';
+}
+    
+
+
+
+
+function resetTournament() {
+    resetTournamentData(); // Reseta os dados internos
+    
+    // Esconde e limpa as seções
+    document.getElementById('tournamentInfo').style.display = 'none';
+    document.getElementById('teamSelectionSection').style.display = 'none';
+    document.getElementById('bracketSection').style.display = 'none';
+    document.getElementById('championSection').style.display = 'none';
+    document.getElementById('pointsSection').style.display = 'none';
+
+    document.getElementById('bracket').innerHTML = ''; // Limpa o conteúdo do chaveamento
+    document.getElementById('pointsTableBody').innerHTML = ''; // Limpa a tabela de pontos
+
+    // Reseta selects e botões
+    document.getElementById('tournamentSelect').value = "";
+    document.getElementById('pointsPerWin').value = "10";
+    document.getElementById('generateBtn').disabled = true;
+    document.getElementById('simulateBtn').disabled = true;
+    
+    // Atualiza contadores para 0
+    document.getElementById('totalTeams').textContent = '0';
+    document.getElementById('totalRounds').textContent = '0';
+    document.getElementById('totalMatches').textContent = '0';
+    document.getElementById('championTeam').textContent = 'Pendente';
+    document.getElementById('selectedCount').textContent = '0';
+
+    // Garante que a seção de seleção de times esteja pronta para nova interação
+    document.getElementById('teamGrid').innerHTML = ''; // Limpa o grid de seleção
+    // Não chama populateTeamGrid aqui, será chamada ao selecionar o tipo de torneio novamente
+}
+
+// Função auxiliar para resetar apenas os dados internos do torneio
+function resetTournamentData() {
+    bracketData = {};
+    selectedTeams = [];
+    matchResults = {};
+    document.getElementById('championName').textContent = 'Time Vencedor'; // Resetar texto
+    document.getElementById('championTeam').textContent = 'Pendente';
+}
+
+function generateBracket(){
+    const tournamentType = document.getElementById('tournamentSelect').value;
+    const config = tournamentConfigs[tournamentType];
+
+    if (!config || selectedTeams.length !== config.totalTeams){
+        alert(`Por favor, selecione exatamente ${config.totalTeams} times para gerar o chaveamento.`)
+        return;
+    }
+
+    resetTournamentData(); // Limpa dados anteriores antes de gerar um novo
+    const shuffledTeams = shuffleArray([...selectedTeams]); // constante para embarlhar times , traz uma array com os times selecionados
+
+    bracketData = {}; // zera o objeto bracketdata 
+    //✅ Popula a primeira rodada fora do forEach de rounds, apenas uma vez.
+    let currentRoundTeams = [...shuffledTeams]; // nova lista de times da rodada atual
+    bracketData[config.rounds[0]] = []; // Garante que o array da primeira rodada está vazio e pronto
+
+    for (let i = 0; i < config.matchesPerRound[0]; i++) { // junta o numero de times ao numero de partidas na rodada atual, ex 16 times , da 8 partidas, 8 vezes que o loop vai rodar 
+        const team1 = currentRoundTeams.shift(); //  Remove e retorna o primeiro time do array
+        const team2 = currentRoundTeams.shift();  
+        bracketData[config.rounds[0]].push({ //  Adiciona um novo objeto de partida ao array da primeira rodada em ,  refere-se ao nome da primeira rodada).
+            id: `match-${0}-${i}`,
+            team1: team1,
+            team2: team2,
+            score1: null,
+            score2: null,
+            winner: null,
+            nextMatchId: null // Será preenchido na renderização/avanço
+        });
+    }
+    // ✅ Agora, inicializa os arrays para as rodadas restantes (se houver)
+    for (let r = 1; r < config.rounds.length; r++) { // Começa do índice 1 (segunda rodada)
+    bracketData[config.rounds[r]] = [];
+    };
+
+    // Vincula as próximas partidas (estrutura o chaveamento)
+    for (let r = 0; r < config.rounds.length - 1; r++) { // significa que o loop continuará enquanto r for menor que o índice da penúltima rodada. Isso faz com que o loop pare antes de processar a última rodada (a Final, neste caso).
+        const currentRoundName = config.rounds[r];
+        const nextRound = config.rounds[r + 1];
+        let nextMatchIndex = 0;
+
+        for (let i = 0; i < bracketData[currentRoundName].length; i++) {
+            const match = bracketData[currentRoundName][i];
+            // A cada duas partidas, elas alimentam uma próxima partida
+            if (i % 2 === 0) { // A expressão verifica se a variável i é um número par.
+                // Cria a próxima partida se ainda não existir
+                if (!bracketData[nextRoundName][nextMatchIndex]) {
+                    bracketData[nextRoundName][nextMatchIndex] = {
+                        id: `match-${r + 1}-${nextMatchIndex}`,
+                        team1: null,
+                        team2: null,
+                        score1: null,
+                        score2: null,
+                        winner: null,
+                        nextMatchId: (r + 1 < config.rounds.length - 1) ? `match-${r + 2}-${Math.floor(nextMatchIndex / 2)}` : null // Vincula ao próximo
+                    };
+                }
+                match.nextMatchId = `match-${r + 1}-${nextMatchIndex}`;
+            } else {
+                match.nextMatchId = `match-${r + 1}-${nextMatchIndex}`;
+                nextMatchIndex++; // Avança para a próxima partida da próxima rodada
+            }
+        }
+    }
+
+
+    renderBracket(config);
+    document.getElementById('bracketSection').style.display = 'block';
+    document.getElementById('simulateBtn').disabled = false;
+    document.getElementById('teamSelectionSection').style.display = 'none'; // Esconde a seleção de times após gerar
+
+}
+
+function renderBracket (config){
+    const bracketDiv = document.getElementById('bracket');
+    bracketDiv.innerHTML = ''; 
+
+    config.rounds.forEach((roundName, roundIndex) => {
+        const roundDiv = document.createElement('div');
+        roundDiv.classList.add('round');
+        roundDiv.id = `round-${roundIndex}`;
+
+        const roundTitle = document.createElement('h4');
+        roundTitle.textContent = roundName;
+        roundDiv.appendChild(roundTitle);
+
+        bracketData[roundName].forEach(match => {
+            const matchDiv = document.createElement('div');
+            matchDiv.classList.add('match');
+            matchDiv.id = match.id;
+
+            const team1Div = document.createElement('div');
+            team1Div.classList.add('team');
+            team1Div.innerHTML = `<span class="team-name">${match.team1 || 'Aguardando...'}</span><span class="team-score">${match.score1 !== null ? match.score1 : '-'}</span>`;
+            matchDiv.appendChild(team1Div);
+
+            const vsDiv = document.createElement('div');
+            vsDiv.classList.add('match-vs');
+            vsDiv.textContent = 'VS';
+            matchDiv.appendChild(vsDiv);
+
+            const team2Div = document.createElement('div');
+            team2Div.classList.add('team');
+            team2Div.innerHTML = `<span class="team-name">${match.team2 || 'Aguardando...'}</span><span class="team-score">${match.score2 !== null ? match.score2 : '-'}</span>`;
+            matchDiv.appendChild(team2Div);
+
+
+            if (match.winner) {
+                matchDiv.classList.add('completed');
+                if (match.winner === match.team1) {
+                    team1Div.classList.add('winner');
+                    team2Div.classList.add('loser');
+                } else {
+                    team2Div.classList.add('winner');
+                    team1Div.classList.add('loser');
+                }
+            } else if (!match.team1 || !match.team2) {
+                matchDiv.classList.add('empty-slot'); // Estilo para partidas futuras
+            }
+
+            matchDiv.onclick = () => manuallySetScore(match.id); // Adiciona a função de setar placar manual
+            roundDiv.appendChild(matchDiv);
+        });
+        bracketDiv.appendChild(roundDiv);
+    });
+}
+
+function getWinner(score1, score2, team1, team2) {
+    if (score1 > score2) return team1;
+    if (score2 > score1) return team2;
+    // Em caso de empate, simula um "golden goal" ou pênaltis
+    return Math.random() > 0.5 ? team1 : team2;
+}
+
+function generateRandomScore() {
+    return Math.floor(Math.random() * 5); // Placar de 0 a 4
+}
+
+function simulateMatch() {
+    const tournamentType = document.getElementById('tournamentSelect').value;
+    const config = tournamentConfigs[tournamentType];
+    let nextMatchFound = false; // para controlar se uma partida não jogada foi encontrada.
+
+    for (let r = 0; r < config.rounds.length; r++) {
+        const roundName = config.rounds[r];
+        for (let i = 0; i < bracketData[roundName].length; i++) {
+            const match = bracketData[roundName][i];
+
+            if (match.team1 && match.team2 && !match.winner) { // percorre todas as partidas do torneio, em busca da primeira partida  com ambas as equipes definidas , mas ainda não tem um vencedor
+                // simula pártida e define um vencedor 
+                match.score1 = generateRandomScore();
+                match.score2 = generateRandomScore();
+                match.winner = getWinner(match.score1, match.score2, match.team1, match.team2);
+
+                updateMatchUI(match); // Atualiza a UI da partida atual
+
+                // Avança o vencedor para a próxima fase
+                if (match.nextMatchId) {
+                    const [nextRoundIndex, nextMatchIndex] = match.nextMatchId.split('-').slice(1).map(Number);
+                    const nextRoundName = config.rounds[nextRoundIndex];
+                    const nextMatch = bracketData[nextRoundName][nextMatchIndex];
+
+                    if (!nextMatch) {
+                        console.error("Próxima partida não encontrada:", match.nextMatchId);
+                        return;
+                    }
+
+                    if (match.id.endsWith('0') || match.id.endsWith('2') || match.id.endsWith('4') || match.id.endsWith('6')) { // Primeiro time do par
+                        nextMatch.team1 = match.winner;
+                    } else { // Segundo time do par
+                        nextMatch.team2 = match.winner;
+                    }
+                    // Atualiza a UI da próxima partida (ainda sem scores)
+                    updateMatchUI(nextMatch);
+                } else {
+                    // Se não há nextMatchId, é a final! O vencedor é o campeão.
+                    document.getElementById('championName').textContent = match.winner;
+                    document.getElementById('championSection').style.display = 'block';
+                    document.getElementById('simulateBtn').disabled = true; // Desabilita simulação
+                }
+
+                calculateAllPoints(); // Atualiza a tabela de pontos após cada partida
+                nextMatchFound = true;
+                return; // Simula apenas uma partida por clique
+            }
+        }
+    }
+
+    if (!nextMatchFound) {
+        alert("Todas as partidas foram simuladas! O torneio terminou.");
+        document.getElementById('simulateBtn').disabled = true;
+    }
+}
+
+function updateMatchUI(match) {
+
+const matchDiv = document.getElementById(match.id);
+    if (!matchDiv) return;
+
+    
+    const team1Div = matchDiv.querySelector('.team:first-child');
+    const team2Div = matchDiv.querySelector('.team:last-child');
+
+
+    team1Div.querySelector('.team-name').textContent = match.team1 || 'Aguardando...';
+    team1Div.querySelector('.team-score').textContent = match.score1 !== null ? match.score1 : '-';
+
+    team2Div.querySelector('.team-name').textContent = match.team2 || 'Aguardando...';
+    team2Div.querySelector('.team-score').textContent = match.score2 !== null ? match.score2 : '-';
+
+    if (match.winner) {
+        matchDiv.classList.add('completed');
+        team1Div.classList.remove('winner', 'loser');
+        team2Div.classList.remove('winner', 'loser');
+
+     if (match.winner === match.team1) {
+            team1Div.classList.add('winner');
+            team2Div.classList.add('loser');
+        } else {
+            team2Div.classList.add('winner');
+            team1Div.classList.add('loser');
+        }
+    } else if (!match.team1 || !match.team2) {
+        matchDiv.classList.add('empty-slot');
+    }
+}
+
+function manuallySetScore(matchId) {
+    const [roundIndex, matchIndex] = matchId.split('-').slice(1).map(Number);
+    const tournamentType = document.getElementById('tournamentSelect').value;
+    const config = tournamentConfigs[tournamentType];
+    const roundName = config.rounds[roundIndex];
+    const match = bracketData[roundName][matchIndex];
+
+    if (!match || !match.team1 || !match.team2 || match.winner) {
+        // Não permite editar partidas vazias ou já concluídas
+        return;
+    }
+
+    let score1 = prompt(`Digite o placar para ${match.team1}:`);
+    let score2 = prompt(`Digite o placar para ${match.team2}:`);
+
+    score1 = parseInt(score1);
+    score2 = parseInt(score2);
+
+    if (isNaN(score1) || isNaN(score2) || score1 < 0 || score2 < 0) {
+        alert("Placares inválidos. Por favor, digite números não negativos.");
+        return;
+    }
+
+    match.score1 = score1;
+    match.score2 = score2;
+    match.winner = getWinner(match.score1, match.score2, match.team1, match.team2);
+
+    updateMatchUI(match);
+
+    // Lógica para avançar o vencedor para a próxima fase (copiar da simulateMatch)
+    if (match.nextMatchId) {
+        const [nextRoundIndex, nextMatchIndex] = match.nextMatchId.split('-').slice(1).map(Number);
+        const nextRoundName = config.rounds[nextRoundIndex];
+        const nextMatch = bracketData[nextRoundName][nextMatchIndex];
+
+        if (!nextMatch) {
+            console.error("Próxima partida não encontrada:", match.nextMatchId);
+            return;
+        }
+
+        if (match.id.endsWith('0') || match.id.endsWith('2') || match.id.endsWith('4') || match.id.endsWith('6')) {
+            nextMatch.team1 = match.winner;
+        } else {
+            nextMatch.team2 = match.winner;
+        }
+        updateMatchUI(nextMatch);
+    } else {
+        document.getElementById('championName').textContent = match.winner;
+        document.getElementById('championSection').style.display = 'block';
+        document.getElementById('simulateBtn').disabled = true;
+    }
+
+    calculateAllPoints();
+}
+
+function calculateAllPoints() { 
+    pointsMultiplier = parseInt(document.getElementById('pointsPerWin').value); //  Converte essa string em um número inteiro.
+    const tournamentType = document.getElementById('tournamentSelect').value;
+    const config = tournamentConfigs[tournamentType];
+
+    const teamPoints = {};
+    selectedTeams.forEach(team => {
+        teamPoints[team] = {
+            wins: 0,
+            faseReached: "Não Participou", // Fase mais alta alcançada
+            points: 0
+        };
+    });
+
+     // Calcula vitórias e a fase alcançada 
+    for (let r = 0; r < config.rounds.length; r++) {  // Define a rodada 
+        const roundName = config.rounds[r];  // Da o nome da rodada
+        bracketData[roundName].forEach(match => { // "banco de dados para percorrer a rodada e as partidas da rodada"
+            if (match.winner) {
+                // Adiciona vitória ao vencedor
+                if (teamPoints[match.winner]) { 
+                    teamPoints[match.winner].wins++; //  Incrementa o contador de vitórias para o time vencedor.
+                }
+
+                // Define a fase alcançada para o vencedor
+                if (teamPoints[match.winner] && r < config.rounds.length) { // Certifica que não é a fase "Não Participou" se já jogou
+                    teamPoints[match.winner].faseReached = roundName;
+                }
+                
+                // Define a fase alcançada para o perdedor 
+                const loser = (match.winner === match.team1) ? match.team2 : match.team1;
+                if (teamPoints[loser]) {
+                    teamPoints[loser].faseReached = roundName;
+                }
+            }
+        });
+    }
+     // Calcula os pontos finais com base nas vitórias e fase alcançada
+    for (const teamName in teamPoints) {
+        const teamData = teamPoints[teamName];
+        teamData.points = teamData.wins * pointsMultiplier;
+
+        // Adiciona pontos extras por fase alcançada (ex: semifinalista, finalista, campeão)
+        const roundNames = config.rounds;
+        if (teamData.faseReached === roundNames[roundNames.length - 1] && teamPoints[teamName].wins > 0) { // Campeão
+            teamData.points += pointsMultiplier * 2; // Ex: +20 pontos por ser campeão
+            document.getElementById('championTeam').textContent = teamName;
+        } else if (roundNames.length >= 2 && teamData.faseReached === roundNames[roundNames.length - 2]) { // Finalista
+            teamData.points += pointsMultiplier; // Ex: +10 pontos por chegar à final
+        } else if (roundNames.length >= 3 && teamData.faseReached === roundNames[roundNames.length - 3]) { // Semifinalista
+             // Não adiciona pontos extras aqui se já ganhou pontos por vitórias,
+             // ou você pode adicionar um valor menor
+        }
+    }
+    renderPointsTable(teamPoints);  
+}
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) { //O loop for começa do último elemento do array,  vai diminuindo o índice (i) até o segundo elemento (o loop para quando i é 1, porque não precisamos trocar o primeiro elemento com ele mesmo).
+        const j = Math.floor(Math.random() * (i + 1)); // Escolha de um elemento aleatório dentro dessa array
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('tournamentSelect').addEventListener('change', updateTournamentInfo);
+    document.getElementById('pointsPerWin').addEventListener('change', calculateAllPoints);
+    document.getElementById('generateBtn').addEventListener('click', generateBracket);
+    document.getElementById('simulateBtn').addEventListener('click', simulateMatch);
+    document.querySelector('.btn-secondary').addEventListener('click', resetTournament);
+
+    // Chamar updateTournamentInfo() uma vez para inicializar a UI com base no valor padrão (vazio)
+    updateTournamentInfo();
+});
+    </script>
+    
+</body>
+</html>
