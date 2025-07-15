@@ -743,7 +743,7 @@ function updateTournamentInfo () {
     const maxTeamsSpan = document.getElementById('maxTeams');
     const generateBtn = document.getElementById('generateBtn'); 
    
-    // ✅ CORREÇÃO: Lógica para quando NENHUM tipo de torneio é selecionado (opção padrão "")
+    
     if (tournamentType === "") {
         infoSection.style.display = 'none'; // Esconde a seção de informações
         teamSelectionSection.style.display = 'none'; // Esconde a seleção de times
@@ -891,7 +891,7 @@ function resetTournament() {
 
 // Função auxiliar para resetar apenas os dados internos do torneio
 function resetTournamentData() {
-    bracketData = {};
+    bracketData = {}; 
     selectedTeams = [];
     matchResults = {};
     document.getElementById('championName').textContent = 'Time Vencedor'; // Resetar texto
@@ -907,13 +907,10 @@ function generateBracket(){
         return;
     }
 
-    resetTournamentData(); // Limpa dados anteriores antes de gerar um novo
-    const shuffledTeams = shuffleArray([...selectedTeams]); // constante para embarlhar times , traz uma array com os times selecionados
-
-    bracketData = {}; // zera o objeto bracketdata 
-    //✅ Popula a primeira rodada fora do forEach de rounds, apenas uma vez.
-    let currentRoundTeams = [...shuffledTeams]; // nova lista de times da rodada atual
-    bracketData[config.rounds[0]] = []; // Garante que o array da primeira rodada está vazio e pronto
+    bracketData = {};
+    const shuffledTeams = shuffleArray([...selectedTeams]); 
+    let currentRoundTeams = [...shuffledTeams]; 
+    bracketData[config.rounds[0]] = []; 
 
     for (let i = 0; i < config.matchesPerRound[0]; i++) { // junta o numero de times ao numero de partidas na rodada atual, ex 16 times , da 8 partidas, 8 vezes que o loop vai rodar 
         const team1 = currentRoundTeams.shift(); //  Remove e retorna o primeiro time do array
