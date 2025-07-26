@@ -693,7 +693,7 @@
 let selectedTeams = [];
 let matchResults = {};
 let bracketData = {};
-let pointsMultiplier = 10;/*Para calcular a pontuação dos vencedores dos confrontos*/
+let pointsMultiplier = 10;
 
 
 
@@ -745,11 +745,11 @@ function updateTournamentInfo () {
    
     
     if (tournamentType === "") {
-        infoSection.style.display = 'none'; // Esconde a seção de informações
-        teamSelectionSection.style.display = 'none'; // Esconde a seleção de times
-        document.getElementById('bracketSection').style.display = 'none'; // Esconder chaveamento
-        document.getElementById('championSection').style.display = 'none'; // Esconder campeão
-        document.getElementById('pointsSection').style.display = 'none'; // Esconder pontos
+        infoSection.style.display = 'none'; 
+        teamSelectionSection.style.display = 'none';
+        document.getElementById('bracketSection').style.display = 'none'; 
+        document.getElementById('championSection').style.display = 'none'; 
+        document.getElementById('pointsSection').style.display = 'none';
 
         generateBtn.disabled = true;
         document.getElementById('simulateBtn').disabled = true;
@@ -764,12 +764,11 @@ function updateTournamentInfo () {
         selectedTeams = []; 
         bracketData = {}; 
         
-        return; // Sai da função APENAS SE A OPÇÃO FOR VAZIA
+        return; 
     }
 
-    // ✅ CORREÇÃO: Este bloco agora é executado APENAS se um tournamentType VÁLIDO for selecionado
-    const config = tournamentConfigs[tournamentType]; // Acessar as configurações do torneio
-    if (!config) { // Verificação de segurança caso o tipo não exista (embora o HTML evite isso)
+    const config = tournamentConfigs[tournamentType]; 
+    if (!config) { 
         console.error("Configuração de torneio não encontrada para:", tournamentType);
         return;
     }
@@ -777,18 +776,18 @@ function updateTournamentInfo () {
     // Atualiza os elementos na seção 'tournament-info' com base na configuração
     document.getElementById('totalTeams').textContent = config.totalTeams;
     document.getElementById('totalRounds').textContent = config.rounds.length;
-    document.getElementById('totalMatches').textContent = config.totalTeams - 1; // N-1 partidas
-    document.getElementById('championTeam').textContent = 'Pendente'; // Sempre pendente ao iniciar/mudar o torneio
+    document.getElementById('totalMatches').textContent = config.totalTeams - 1; 
+    document.getElementById('championTeam').textContent = 'Pendente'; 
 
-    infoSection.style.display = 'block'; // Exibe a seção de informações do torneio
-    maxTeamsSpan.textContent = config.totalTeams; // Atualiza o texto de máximo de times na seção de seleção de times
-    teamSelectionSection.style.display = 'block'; // Exibe a seção de seleção de times
+    infoSection.style.display = 'block'; 
+    maxTeamsSpan.textContent = config.totalTeams;
+    teamSelectionSection.style.display = 'block';
 
     // Reseta e preenche o grid de times para a nova seleção
-    selectedTeams = []; // Limpa os times selecionados anteriormente
+    selectedTeams = [];
     document.getElementById('selectedCount').textContent = selectedTeams.length;
     generateBtn.disabled = true;
-    document.getElementById('simulateBtn').disabled = true; // Certificar que simular está desabilitado
+    document.getElementById('simulateBtn').disabled = true;
     
     populateTeamGrid(config.totalTeams);
 }
@@ -798,11 +797,11 @@ function selectTeam(teamName, element, maxTeamsToSelect) {
     const selectedCountSpan = document.getElementById('selectedCount');
 
     if (element.classList.contains('selected')) {
-        // Desseleciona o time
+        
         element.classList.remove('selected');
         selectedTeams = selectedTeams.filter(team => team !== teamName);
     } else {
-        // Seleciona o time, se ainda houver espaço
+    
         if (selectedTeams.length < maxTeamsToSelect) {
             element.classList.add('selected');
             selectedTeams.push(teamName);
@@ -822,14 +821,14 @@ function selectTeam(teamName, element, maxTeamsToSelect) {
 
 function populateTeamGrid(maxTeamsToSelect) {
     const teamGrid = document.getElementById('teamGrid');
-    teamGrid.innerHTML = ''; // Limpa o grid
+    teamGrid.innerHTML = ''; 
 
     allTeams.forEach(team => {
         const teamSlot = document.createElement('div');
         teamSlot.classList.add('team-slot');
         teamSlot.textContent = team;
         teamSlot.onclick = () => selectTeam(team, teamSlot, maxTeamsToSelect);
-        teamGrid.appendChild(teamSlot);// Adiciona o slot de time ao grid
+        teamGrid.appendChild(teamSlot);
     });
 }
 
@@ -844,7 +843,7 @@ function renderPointsTable(teamPoints) {
 
     sortedTeams.forEach(([teamName, data], index) => { 
         const row = pointsTableBody.insertRow();
-        row.insertCell().textContent = index + 1; // Posição
+        row.insertCell().textContent = index + 1; 
         row.insertCell().textContent = teamName;
         row.insertCell().textContent = data.wins;
         row.insertCell().textContent = data.faseReached;
@@ -859,7 +858,7 @@ function renderPointsTable(teamPoints) {
 
 
 function resetTournament() {
-    resetTournamentData(); // Reseta os dados internos
+    resetTournamentData(); 
     
     // Esconde e limpa as seções
     document.getElementById('tournamentInfo').style.display = 'none';
@@ -868,8 +867,8 @@ function resetTournament() {
     document.getElementById('championSection').style.display = 'none';
     document.getElementById('pointsSection').style.display = 'none';
 
-    document.getElementById('bracket').innerHTML = ''; // Limpa o conteúdo do chaveamento
-    document.getElementById('pointsTableBody').innerHTML = ''; // Limpa a tabela de pontos
+    document.getElementById('bracket').innerHTML = ''; 
+    document.getElementById('pointsTableBody').innerHTML = ''; 
 
     // Reseta selects e botões
     document.getElementById('tournamentSelect').value = "";
@@ -885,8 +884,7 @@ function resetTournament() {
     document.getElementById('selectedCount').textContent = '0';
 
     // Garante que a seção de seleção de times esteja pronta para nova interação
-    document.getElementById('teamGrid').innerHTML = ''; // Limpa o grid de seleção
-    // Não chama populateTeamGrid aqui, será chamada ao selecionar o tipo de torneio novamente
+    document.getElementById('teamGrid').innerHTML = '';
 }
 
 // Função auxiliar para resetar apenas os dados internos do torneio
@@ -894,7 +892,7 @@ function resetTournamentData() {
     bracketData = {}; 
     selectedTeams = [];
     matchResults = {};
-    document.getElementById('championName').textContent = 'Time Vencedor'; // Resetar texto
+    document.getElementById('championName').textContent = 'Time Vencedor';
     document.getElementById('championTeam').textContent = 'Pendente';
 }
 
@@ -911,43 +909,45 @@ function generateBracket(){
     const shuffledTeams = shuffleArray([...selectedTeams]); 
     let currentRoundTeams = [...shuffledTeams]; 
     bracketData[config.rounds[0]] = []; 
+    console.log(bracketData);
 
-    for (let i = 0; i < config.matchesPerRound[0]; i++) { // junta o numero de times ao numero de partidas na rodada atual, ex 16 times , da 8 partidas, 8 vezes que o loop vai rodar 
-        const team1 = currentRoundTeams.shift(); //  Remove e retorna o primeiro time do array
+    for (let i = 0; i < config.matchesPerRound[0]; i++) { 
+        const team1 = currentRoundTeams.shift();
         const team2 = currentRoundTeams.shift();  
-        bracketData[config.rounds[0]].push({ //  Adiciona um novo objeto de partida ao array da primeira rodada em ,  refere-se ao nome da primeira rodada).
+        bracketData[config.rounds[0]].push({ 
             id: `match-${0}-${i}`,
             team1: team1,
             team2: team2,
-            score1: null,
-            score2: null,
+            score1: 0,
+            score2: 0,
             winner: null,
-            nextMatchId: null // Será preenchido na renderização/avanço
+            nextMatchId: null 
         });
     }
-    // ✅ Agora, inicializa os arrays para as rodadas restantes (se houver)
-    for (let r = 1; r < config.rounds.length; r++) { // Começa do índice 1 (segunda rodada)
+
+    for (let r = 1; r < config.rounds.length; r++) {
     bracketData[config.rounds[r]] = [];
     };
 
     // Vincula as próximas partidas (estrutura o chaveamento)
-    for (let r = 0; r < config.rounds.length - 1; r++) { // significa que o loop continuará enquanto r for menor que o índice da penúltima rodada. Isso faz com que o loop pare antes de processar a última rodada (a Final, neste caso).
+    for (let r = 0; r < config.rounds.length - 1; r++) {
         const currentRoundName = config.rounds[r];
         const nextRound = config.rounds[r + 1];
         let nextMatchIndex = 0;
 
         for (let i = 0; i < bracketData[currentRoundName].length; i++) {
             const match = bracketData[currentRoundName][i];
+
             // A cada duas partidas, elas alimentam uma próxima partida
-            if (i % 2 === 0) { // A expressão verifica se a variável i é um número par.
-                // Cria a próxima partida se ainda não existir
-                if (!bracketData[nextRoundName][nextMatchIndex]) {
-                    bracketData[nextRoundName][nextMatchIndex] = {
+            if (i % 2 === 0) { 
+                
+                if (!bracketData[nextRound][nextMatchIndex]) {
+                    bracketData[nextRound][nextMatchIndex] = {
                         id: `match-${r + 1}-${nextMatchIndex}`,
                         team1: null,
                         team2: null,
-                        score1: null,
-                        score2: null,
+                        score1: 0,
+                        score2: 0,
                         winner: null,
                         nextMatchId: (r + 1 < config.rounds.length - 1) ? `match-${r + 2}-${Math.floor(nextMatchIndex / 2)}` : null // Vincula ao próximo
                     };
@@ -955,7 +955,7 @@ function generateBracket(){
                 match.nextMatchId = `match-${r + 1}-${nextMatchIndex}`;
             } else {
                 match.nextMatchId = `match-${r + 1}-${nextMatchIndex}`;
-                nextMatchIndex++; // Avança para a próxima partida da próxima rodada
+                nextMatchIndex++; 
             }
         }
     }
@@ -964,14 +964,14 @@ function generateBracket(){
     renderBracket(config);
     document.getElementById('bracketSection').style.display = 'block';
     document.getElementById('simulateBtn').disabled = false;
-    document.getElementById('teamSelectionSection').style.display = 'none'; // Esconde a seleção de times após gerar
+    document.getElementById('teamSelectionSection').style.display = 'none'; 
 
 }
 
 function renderBracket (config){
     const bracketDiv = document.getElementById('bracket');
     bracketDiv.innerHTML = ''; 
-
+    console.log(config);
     config.rounds.forEach((roundName, roundIndex) => {
         const roundDiv = document.createElement('div');
         roundDiv.classList.add('round');
@@ -981,6 +981,7 @@ function renderBracket (config){
         roundTitle.textContent = roundName;
         roundDiv.appendChild(roundTitle);
 
+        console.log(bracketData);
         bracketData[roundName].forEach(match => {
             const matchDiv = document.createElement('div');
             matchDiv.classList.add('match');
@@ -1012,10 +1013,10 @@ function renderBracket (config){
                     team1Div.classList.add('loser');
                 }
             } else if (!match.team1 || !match.team2) {
-                matchDiv.classList.add('empty-slot'); // Estilo para partidas futuras
+                matchDiv.classList.add('empty-slot'); 
             }
 
-            matchDiv.onclick = () => manuallySetScore(match.id); // Adiciona a função de setar placar manual
+            matchDiv.onclick = () => manuallySetScore(match.id);
             roundDiv.appendChild(matchDiv);
         });
         bracketDiv.appendChild(roundDiv);
@@ -1025,31 +1026,31 @@ function renderBracket (config){
 function getWinner(score1, score2, team1, team2) {
     if (score1 > score2) return team1;
     if (score2 > score1) return team2;
-    // Em caso de empate, simula um "golden goal" ou pênaltis
+
     return Math.random() > 0.5 ? team1 : team2;
 }
 
 function generateRandomScore() {
-    return Math.floor(Math.random() * 5); // Placar de 0 a 4
+    return Math.floor(Math.random() * 5); 
 }
 
 function simulateMatch() {
     const tournamentType = document.getElementById('tournamentSelect').value;
     const config = tournamentConfigs[tournamentType];
-    let nextMatchFound = false; // para controlar se uma partida não jogada foi encontrada.
+    let nextMatchFound = false;
 
     for (let r = 0; r < config.rounds.length; r++) {
         const roundName = config.rounds[r];
         for (let i = 0; i < bracketData[roundName].length; i++) {
             const match = bracketData[roundName][i];
 
-            if (match.team1 && match.team2 && !match.winner) { // percorre todas as partidas do torneio, em busca da primeira partida  com ambas as equipes definidas , mas ainda não tem um vencedor
-                // simula pártida e define um vencedor 
+            if (match.team1 && match.team2 && !match.winner) { 
+                 
                 match.score1 = generateRandomScore();
                 match.score2 = generateRandomScore();
                 match.winner = getWinner(match.score1, match.score2, match.team1, match.team2);
 
-                updateMatchUI(match); // Atualiza a UI da partida atual
+                updateMatchUI(match); 
 
                 // Avança o vencedor para a próxima fase
                 if (match.nextMatchId) {
@@ -1067,18 +1068,18 @@ function simulateMatch() {
                     } else { // Segundo time do par
                         nextMatch.team2 = match.winner;
                     }
-                    // Atualiza a UI da próxima partida (ainda sem scores)
+                
                     updateMatchUI(nextMatch);
                 } else {
-                    // Se não há nextMatchId, é a final! O vencedor é o campeão.
+        
                     document.getElementById('championName').textContent = match.winner;
                     document.getElementById('championSection').style.display = 'block';
-                    document.getElementById('simulateBtn').disabled = true; // Desabilita simulação
+                    document.getElementById('simulateBtn').disabled = true; 
                 }
 
-                calculateAllPoints(); // Atualiza a tabela de pontos após cada partida
+                calculateAllPoints(); 
                 nextMatchFound = true;
-                return; // Simula apenas uma partida por clique
+                return; 
             }
         }
     }
@@ -1130,7 +1131,7 @@ function manuallySetScore(matchId) {
     const match = bracketData[roundName][matchIndex];
 
     if (!match || !match.team1 || !match.team2 || match.winner) {
-        // Não permite editar partidas vazias ou já concluídas
+    
         return;
     }
 
@@ -1178,31 +1179,31 @@ function manuallySetScore(matchId) {
 }
 
 function calculateAllPoints() { 
-    pointsMultiplier = parseInt(document.getElementById('pointsPerWin').value); //  Converte essa string em um número inteiro.
+    pointsMultiplier = parseInt(document.getElementById('pointsPerWin').value); 
     const tournamentType = document.getElementById('tournamentSelect').value;
     const config = tournamentConfigs[tournamentType];
 
     const teamPoints = {};
     selectedTeams.forEach(team => {
         teamPoints[team] = {
-            wins: 0,
-            faseReached: "Não Participou", // Fase mais alta alcançada
+            wins: 0, 
+            faseReached: "Não Participou", 
             points: 0
         };
     });
 
      // Calcula vitórias e a fase alcançada 
-    for (let r = 0; r < config.rounds.length; r++) {  // Define a rodada 
-        const roundName = config.rounds[r];  // Da o nome da rodada
-        bracketData[roundName].forEach(match => { // "banco de dados para percorrer a rodada e as partidas da rodada"
+    for (let r = 0; r < config.rounds.length; r++) {  
+        const roundName = config.rounds[r];
+        bracketData[roundName].forEach(match => {
             if (match.winner) {
                 // Adiciona vitória ao vencedor
                 if (teamPoints[match.winner]) { 
-                    teamPoints[match.winner].wins++; //  Incrementa o contador de vitórias para o time vencedor.
+                    teamPoints[match.winner].wins++; 
                 }
 
                 // Define a fase alcançada para o vencedor
-                if (teamPoints[match.winner] && r < config.rounds.length) { // Certifica que não é a fase "Não Participou" se já jogou
+                if (teamPoints[match.winner] && r < config.rounds.length) {
                     teamPoints[match.winner].faseReached = roundName;
                 }
                 
@@ -1221,22 +1222,21 @@ function calculateAllPoints() {
 
         // Adiciona pontos extras por fase alcançada (ex: semifinalista, finalista, campeão)
         const roundNames = config.rounds;
-        if (teamData.faseReached === roundNames[roundNames.length - 1] && teamPoints[teamName].wins > 0) { // Campeão
-            teamData.points += pointsMultiplier * 2; // Ex: +20 pontos por ser campeão
+        if (teamData.faseReached === roundNames[roundNames.length - 1] && teamPoints[teamName].wins > 0) { 
+            teamData.points += pointsMultiplier * 2; 
             document.getElementById('championTeam').textContent = teamName;
-        } else if (roundNames.length >= 2 && teamData.faseReached === roundNames[roundNames.length - 2]) { // Finalista
-            teamData.points += pointsMultiplier; // Ex: +10 pontos por chegar à final
-        } else if (roundNames.length >= 3 && teamData.faseReached === roundNames[roundNames.length - 3]) { // Semifinalista
-             // Não adiciona pontos extras aqui se já ganhou pontos por vitórias,
-             // ou você pode adicionar um valor menor
+        } else if (roundNames.length >= 2 && teamData.faseReached === roundNames[roundNames.length - 2]) { 
+            teamData.points += pointsMultiplier; 
+        } else if (roundNames.length >= 3 && teamData.faseReached === roundNames[roundNames.length - 3]) {
+
         }
     }
     renderPointsTable(teamPoints);  
 }
 
 function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) { //O loop for começa do último elemento do array,  vai diminuindo o índice (i) até o segundo elemento (o loop para quando i é 1, porque não precisamos trocar o primeiro elemento com ele mesmo).
-        const j = Math.floor(Math.random() * (i + 1)); // Escolha de um elemento aleatório dentro dessa array
+    for (let i = array.length - 1; i > 0; i--) { 
+        const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
     return array;
@@ -1249,7 +1249,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('simulateBtn').addEventListener('click', simulateMatch);
     document.querySelector('.btn-secondary').addEventListener('click', resetTournament);
 
-    // Chamar updateTournamentInfo() uma vez para inicializar a UI com base no valor padrão (vazio)
+
     updateTournamentInfo();
 });
     </script>
