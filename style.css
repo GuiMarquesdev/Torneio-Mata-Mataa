@@ -1,0 +1,560 @@
+/* ===== RESET E CONFIGURAÇÕES BÁSICAS ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* ===== CONTAINER PRINCIPAL ===== */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    overflow: hidden;
+}
+
+/* ===== CABEÇALHO ===== */
+.header {
+    background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+    color: white;
+    padding: 25px;
+    text-align: center;
+}
+
+.header h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.header p {
+    font-size: 1.1em;
+    opacity: 0.9;
+}
+
+/* ===== CONTEÚDO PRINCIPAL ===== */
+.main-content {
+    padding: 30px;
+}
+
+/* ===== SEÇÕES DE FORMULÁRIO ===== */
+.form-section {
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    border-left: 5px solid #dc3545;
+}
+
+.form-section h3 {
+    color: #dc3545;
+    margin-bottom: 20px;
+    font-size: 1.4em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.form-group select,
+.form-group input {
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1em;
+    transition: border-color 0.3s;
+}
+
+.form-group select:focus,
+.form-group input:focus {
+    outline: none;
+    border-color: #dc3545;
+}
+
+/* ===== INFORMAÇÕES DO TORNEIO ===== */
+.tournament-info {
+    display: none;
+    background: #fff5f5;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.info-item {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.info-item .label {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.info-item .value {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #dc3545;
+}
+
+/* ===== SELEÇÃO DE TIMES ===== */
+.team-selection {
+    background: #e3f2fd;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.team-slot {
+    padding: 10px;
+    background: white;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 500;
+}
+
+.team-slot:hover {
+    border-color: #dc3545;
+    background: #fff5f5;
+    transform: translateY(-2px);
+}
+
+.team-slot.selected {
+    border-color: #28a745;
+    background: #d4edda;
+    color: #155724;
+    font-weight: bold;
+}
+
+/* ===== ESTILOS DO CHAVEAMENTO ===== */
+.bracket-section {
+    margin-top: 30px;
+    display: none;
+}
+
+.bracket-container {
+    background: #f8f9fa;
+    padding: 30px;
+    border-radius: 15px;
+    overflow-x: auto;
+    border: 3px solid #dc3545;
+}
+
+.bracket {
+    display: flex;
+    justify-content: space-between;
+    min-width: 800px;
+    gap: 50px;
+}
+
+.round {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    min-height: 400px;
+}
+
+.round h4 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #dc3545;
+    font-size: 1.2em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* ===== PARTIDAS DO CHAVEAMENTO ===== */
+.match {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border: 2px solid #e9ecef;
+    transition: all 0.3s;
+    min-width: 200px;
+}
+
+.match:hover {
+    border-color: #dc3545;
+    transform: translateY(-2px);
+}
+
+.match.completed {
+    border-color: #28a745;
+    background: linear-gradient(135deg, #d4edda, #f8fff9);
+}
+
+.team {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    margin: 5px 0;
+    border-radius: 6px;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.team:hover {
+    background: #f8f9fa;
+}
+
+.team.winner {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    font-weight: bold;
+    transform: scale(1.02);
+}
+
+.team.loser {
+    background: #f8f9fa;
+    color: #6c757d;
+    opacity: 0.7;
+}
+
+.team-name {
+    font-weight: 600;
+    flex-grow: 1;
+}
+
+.team-score {
+    font-size: 1.2em;
+    font-weight: bold;
+    background: #e9ecef;
+    padding: 4px 8px;
+    border-radius: 4px;
+    min-width: 30px;
+    text-align: center;
+}
+
+.team.winner .team-score {
+    background: rgba(255,255,255,0.3);
+    color: white;
+}
+
+.match-vs {
+    text-align: center;
+    color: #dc3545;
+    font-weight: bold;
+    font-size: 0.9em;
+    margin: 5px 0;
+}
+
+.empty-slot {
+    background: #f8f9fa;
+    color: #6c757d;
+    font-style: italic;
+    border: 2px dashed #dee2e6;
+}
+
+/* ===== SEÇÃO DO CAMPEÃO ===== */
+.champion-section {
+    text-align: center;
+    padding: 30px;
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    border-radius: 15px;
+    margin-top: 30px;
+    display: none;
+    border: 3px solid #f39c12;
+}
+
+.champion-section h2 {
+    color: #333;
+    font-size: 2.5em;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+.champion-team {
+    font-size: 2em;
+    font-weight: bold;
+    color: #dc3545;
+    margin-bottom: 10px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+/* ===== TABELA DE PONTOS ===== */
+.points-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+    border-left: 5px solid #17a2b8;
+}
+
+.points-section h3 {
+    color: #17a2b8;
+    margin-bottom: 15px;
+}
+
+.points-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.points-table th,
+.points-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.points-table th {
+    background: #17a2b8;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.points-table tr:hover {
+    background: #f8f9fa;
+}
+
+.points-table tr:first-child td {
+    font-weight: bold;
+}
+
+/* ===== BOTÕES ===== */
+.btn {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #dc3545, #fd7e14);
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #6c757d, #868e96);
+    color: white;
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+}
+
+.btn-success:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 768px) {
+    .container {
+        margin: 10px;
+        border-radius: 10px;
+    }
+
+    .main-content {
+        padding: 20px;
+    }
+
+    .header h1 {
+        font-size: 2em;
+    }
+
+    .bracket {
+        min-width: 600px;
+    }
+    
+    .match {
+        min-width: 150px;
+        padding: 10px;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .button-group {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .team-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+
+    .champion-section h2 {
+        font-size: 2em;
+    }
+
+    .champion-team {
+        font-size: 1.5em;
+    }
+}
+
+@media (max-width: 480px) {
+    .bracket {
+        min-width: 400px;
+        gap: 20px;
+    }
+
+    .match {
+        min-width: 120px;
+        padding: 8px;
+    }
+
+    .team-name {
+        font-size: 0.9em;
+    }
+
+    .team-score {
+        font-size: 1em;
+        padding: 2px 6px;
+    }
+
+    .round h4 {
+        font-size: 1em;
+        padding: 8px;
+    }
+}
+
+/* ===== ANIMAÇÕES E EFEITOS ===== */
+.match.completed {
+    animation: completeMatch 0.5s ease-in-out;
+}
+
+@keyframes completeMatch {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 8px 16px rgba(40, 167, 69, 0.3);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+}
+
+.champion-section {
+    animation: championReveal 1s ease-in-out;
+}
+
+@keyframes championReveal {
+    0% {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== MELHORIAS VISUAIS ===== */
+.team-slot:active {
+    transform: scale(0.98);
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.match:hover .team {
+    background: rgba(220, 53, 69, 0.1);
+}
+
+.points-table tbody tr:nth-child(1) {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+}
+
+.points-table tbody tr:nth-child(2) {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+}
+
+.points-table tbody tr:nth-child(3) {
+    background: linear-gradient(135deg, #fff5f5, #ffe6e6);
+}
