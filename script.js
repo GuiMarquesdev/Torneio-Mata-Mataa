@@ -31,6 +31,27 @@ const tournamentConfigs = {
     }
 };
 
+// Function to show custom alert popup
+function showCustomAlert(message) {
+    const customAlert = document.getElementById('customAlert');
+    const customAlertMessage = document.getElementById('customAlertMessage');
+    const customAlertCloseBtn = customAlert.querySelector('.custom-alert-close-btn');
+    const customAlertOkBtn = customAlert.querySelector('.custom-alert-ok-btn');
+
+    customAlertMessage.textContent = message;
+    customAlert.classList.add('show');
+
+    const hideAlert = () => {
+        customAlert.classList.remove('show');
+        customAlertCloseBtn.removeEventListener('click', hideAlert);
+        customAlertOkBtn.removeEventListener('click', hideAlert);
+    };
+
+    customAlertCloseBtn.addEventListener('click', hideAlert);
+    customAlertOkBtn.addEventListener('click', hideAlert);
+}
+
+
 function updateTournamentInfo() {
     const tournamentSelect = document.getElementById('tournamentSelect');
     const tournamentType = tournamentSelect.value;
@@ -65,11 +86,11 @@ function updateTournamentInfo() {
 
     const config = tournamentConfigs[tournamentType];
     if (!config) {
-        console.error("Tournament configuration not found for:", tournamentType);
+        console.error("Configuração de torneio não encontrada para:", tournamentType);
         return;
     }
 
-    // Update elements in the 'tournament-info' section based on the configuration
+    // Atualiza os elementos na seção 'tournament-info' com base na configuração
     document.getElementById('totalTeams').textContent = config.totalTeams;
     document.getElementById('totalRounds').textContent = config.rounds.length;
     document.getElementById('totalMatches').textContent = config.totalTeams - 1;
@@ -79,7 +100,7 @@ function updateTournamentInfo() {
     maxTeamsSpan.textContent = config.totalTeams;
     teamSelectionSection.style.display = 'block';
 
-    // Reset and populate the team grid for the new selection
+    // Reseta e preenche o grid de times para a nova seleção
     selectedTeams = [];
     document.getElementById('selectedCount').textContent = selectedTeams.length;
     generateBtn.disabled = true;
@@ -100,12 +121,13 @@ function selectTeam(teamName, element, maxTeamsToSelect) {
             element.classList.add('selected');
             selectedTeams.push(teamName);
         } else {
-            alert(`You have already selected the maximum of ${maxTeamsToSelect} teams for this tournament.`);
+            // Substituído alert por popup customizado
+            showCustomAlert(`Você já selecionou o máximo de ${maxTeamsToSelect} times para este torneio.`);
         }
     }
     document.getElementById('selectedCount').textContent = selectedTeams.length;
 
-    // Enable the Generate Bracket button if the correct number of teams is selected
+    // Habilita o botão Gerar Chaveamento se o número de times estiver correto
     if (selectedTeams.length === maxTeamsToSelect) {
         generateBtn.disabled = false;
     } else {
@@ -130,7 +152,7 @@ function renderPointsTable(teamPoints) {
     const pointsTableBody = document.getElementById('pointsTableBody');
     pointsTableBody.innerHTML = '';
 
-    // Convert the object to an array and sort by points
+    // Converte o objeto em array e ordena por pontos
     const sortedTeams = Object.entries(teamPoints).sort(([, a], [, b]) => b.points - a.points);
 
     sortedTeams.forEach(([teamName, data], index) => {
@@ -148,7 +170,7 @@ function renderPointsTable(teamPoints) {
 function resetTournament() {
     resetTournamentData();
 
-    // Hide and clear sections
+    // Esconde e limpa as seções
     document.getElementById('tournamentInfo').style.display = 'none';
     document.getElementById('teamSelectionSection').style.display = 'none';
     document.getElementById('bracketSection').style.display = 'none';
@@ -158,30 +180,30 @@ function resetTournament() {
     document.getElementById('bracket').innerHTML = '';
     document.getElementById('pointsTableBody').innerHTML = '';
 
-    // Reset selects and buttons
+    // Reseta selects e botões
     document.getElementById('tournamentSelect').value = "";
     document.getElementById('pointsPerWin').value = "10";
     document.getElementById('generateBtn').disabled = true;
     document.getElementById('simulateBtn').disabled = true;
 
-    // Update counters to 0
+    // Atualiza contadores para 0
     document.getElementById('totalTeams').textContent = '0';
     document.getElementById('totalRounds').textContent = '0';
     document.getElementById('totalMatches').textContent = '0';
     document.getElementById('championTeam').textContent = 'Pendente';
     document.getElementById('selectedCount').textContent = '0';
 
-    // Ensure the team selection section is ready for new interaction
+    // Garante que a seção de seleção de times esteja pronta para nova interação
     document.getElementById('teamGrid').innerHTML = '';
 }
 
-// Helper function to reset only internal tournament data
+// Função auxiliar para resetar apenas os dados internos do torneio
 function resetTournamentData() {
     bracketData = {};
     selectedTeams = [];
     matchResults = {};
-    document.getElementById('championName').textContent = 'Winning Team';
-    document.getElementById('championTeam').textContent = 'Pending';
+    document.getElementById('championName').textContent = 'Time Vencedor';
+    document.getElementById('championTeam').textContent = 'Pendente';
 }
 
 function generateBracket() {
@@ -189,7 +211,8 @@ function generateBracket() {
     const config = tournamentConfigs[tournamentType];
 
     if (!config || selectedTeams.length !== config.totalTeams) {
-        alert(`Please select exactly ${config.totalTeams} teams to generate the bracket.`);
+        // Substituído alert por popup customizado
+        showCustomAlert(`Por favor, selecione exatamente ${config.totalTeams} times para gerar o chaveamento.`);
         return;
     }
 
@@ -344,13 +367,13 @@ function simulateMatch() {
                     const nextMatch = bracketData[nextRoundName][nextMatchIndex];
 
                     if (!nextMatch) {
-                        console.error("Next match not found:", match.nextMatchId);
+                        console.error("Próxima partida não encontrada:", match.nextMatchId);
                         return;
                     }
 
-                    if (match.id.endsWith('0') || match.id.endsWith('2') || match.id.endsWith('4') || match.id.endsWith('6')) { // First team of the pair
+                    if (match.id.endsWith('0') || match.id.endsWith('2') || match.id.endsWith('4') || match.id.endsWith('6')) { // Primeiro time do par
                         nextMatch.team1 = match.winner;
-                    } else { // Second team of the pair
+                    } else { // Segundo time do par
                         nextMatch.team2 = match.winner;
                     }
 
@@ -369,7 +392,8 @@ function simulateMatch() {
     }
 
     if (!nextMatchFound) {
-        alert("All matches have been simulated! The tournament has ended.");
+        // Substituído alert por popup customizado
+        showCustomAlert("Todas as partidas foram simuladas! O torneio terminou.");
         document.getElementById('simulateBtn').disabled = true;
     }
 }
@@ -415,14 +439,17 @@ function manuallySetScore(matchId) {
         return;
     }
 
-    let score1 = prompt(`Enter the score for ${match.team1}:`);
-    let score2 = prompt(`Enter the score for ${match.team2}:`);
+    // Use custom prompt-like behavior or a custom modal for input if needed
+    // Por enquanto, mantendo prompt, pois é para entrada de dados, não apenas alerta.
+    let score1 = prompt(`Digite o placar para ${match.team1}:`);
+    let score2 = prompt(`Digite o placar para ${match.team2}:`);
 
     score1 = parseInt(score1);
     score2 = parseInt(score2);
 
     if (isNaN(score1) || isNaN(score2) || score1 < 0 || score2 < 0) {
-        alert("Invalid scores. Please enter non-negative numbers.");
+        // Substituído alert por popup customizado
+        showCustomAlert("Placares inválidos. Por favor, insira números não negativos.");
         return;
     }
 
@@ -439,7 +466,7 @@ function manuallySetScore(matchId) {
         const nextMatch = bracketData[nextRoundName][nextMatchIndex];
 
         if (!nextMatch) {
-            console.error("Next match not found:", match.nextMatchId);
+            console.error("Próxima partida não encontrada:", match.nextMatchId);
             return;
         }
 
@@ -467,7 +494,7 @@ function calculateAllPoints() {
     selectedTeams.forEach(team => {
         teamPoints[team] = {
             wins: 0,
-            faseReached: "Not Participated",
+            faseReached: "Não Participou",
             points: 0
         };
     });
@@ -527,7 +554,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('pointsPerWin').addEventListener('change', calculateAllPoints);
     document.getElementById('generateBtn').addEventListener('click', generateBracket);
     document.getElementById('simulateBtn').addEventListener('click', simulateMatch);
-    document.getElementById('resetBtn').addEventListener('click', resetTournament); // Changed to ID
+    document.getElementById('resetBtn').addEventListener('click', resetTournament);
 
     updateTournamentInfo();
 });
