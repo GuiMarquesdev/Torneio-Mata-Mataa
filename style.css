@@ -234,6 +234,13 @@ body {
     background: linear-gradient(135deg, #d4edda, #f8fff9);
 }
 
+/* NEW: Style for matches that went to extra time */
+.match.extra-time {
+    border-color: #007bff; /* A distinct color, e.g., blue */
+    background: linear-gradient(135deg, #e0f2ff, #f0f8ff); /* Lighter blue gradient */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15), 0 0 15px rgba(0, 123, 255, 0.3); /* Add glow */
+}
+
 .team {
     display: flex;
     justify-content: space-between;
@@ -262,6 +269,15 @@ body {
     opacity: 0.7;
 }
 
+/* NEW: Style for tied teams */
+.team.tied {
+    background: #ffc107; /* Yellowish background for ties */
+    color: #343a40;
+    font-weight: bold;
+    border: 1px solid #e0a800;
+}
+
+
 .team-name {
     font-weight: 600;
     flex-grow: 1;
@@ -279,6 +295,12 @@ body {
 
 .team.winner .team-score {
     background: rgba(255,255,255,0.3);
+    color: white;
+}
+
+/* NEW: Score style for tied teams */
+.team.tied .team-score {
+    background: #e0a800;
     color: white;
 }
 
@@ -534,6 +556,32 @@ body {
     }
 }
 
+/* ===== MELHORIAS VISUAIS ===== */
+.team-slot:active {
+    transform: scale(0.98);
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.match:hover .team {
+    background: rgba(220, 53, 69, 0.1);
+}
+
+.points-table tbody tr:nth-child(1) {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+}
+
+.points-table tbody tr:nth-child(2) {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+}
+
+.points-table tbody tr:nth-child(3) {
+    background: linear-gradient(135deg, #fff5f5, #ffe6e6);
+}
+
+/* Custom Alert Popup Styles */
 .custom-alert-overlay {
     position: fixed;
     top: 0;
@@ -608,29 +656,4 @@ body {
 .custom-alert-ok-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 10px rgba(220, 53, 69, 0.3);
-}
-
-/* ===== MELHORIAS VISUAIS ===== */
-.team-slot:active {
-    transform: scale(0.98);
-}
-
-.btn:active {
-    transform: scale(0.98);
-}
-
-.match:hover .team {
-    background: rgba(220, 53, 69, 0.1);
-}
-
-.points-table tbody tr:nth-child(1) {
-    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
-}
-
-.points-table tbody tr:nth-child(2) {
-    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-}
-
-.points-table tbody tr:nth-child(3) {
-    background: linear-gradient(135deg, #fff5f5, #ffe6e6);
 }

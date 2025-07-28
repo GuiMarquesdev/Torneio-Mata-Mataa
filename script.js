@@ -411,11 +411,9 @@ function updateMatchUI(match) {
     team2Div.querySelector('.team-name').textContent = match.team2 || 'Aguardando...';
     team2Div.querySelector('.team-score').textContent = match.score2 !== null ? match.score2 : '-';
 
+
     if (match.winner) {
         matchDiv.classList.add('completed');
-        team1Div.classList.remove('winner', 'loser');
-        team2Div.classList.remove('winner', 'loser');
-
         if (match.winner === match.team1) {
             team1Div.classList.add('winner');
             team2Div.classList.add('loser');
@@ -455,7 +453,7 @@ function manuallySetScore(matchId) {
 
     match.score1 = score1;
     match.score2 = score2;
-    match.winner = getWinner(match.score1, match.score2, match.team1, match.team2);
+    match.winner = getWinner(score1, score2, match.team1, match.team2);
 
     updateMatchUI(match);
 
@@ -490,6 +488,13 @@ function calculateAllPoints() {
     const tournamentType = document.getElementById('tournamentSelect').value;
     const config = tournamentConfigs[tournamentType];
 
+    // ✅ CORREÇÃO: Adicionando verificação para 'config' ser definido
+    // Se a configuração do torneio não foi carregada (dropdown vazio),
+    // não há dados para calcular pontos, então a função retorna.
+    if (!config) {
+        return;
+    }
+
     const teamPoints = {};
     selectedTeams.forEach(team => {
         teamPoints[team] = {
@@ -502,25 +507,28 @@ function calculateAllPoints() {
     // Calculate wins and phase reached
     for (let r = 0; r < config.rounds.length; r++) {
         const roundName = config.rounds[r];
-        bracketData[roundName].forEach(match => {
-            if (match.winner) {
-                // Add win to winner
-                if (teamPoints[match.winner]) {
-                    teamPoints[match.winner].wins++;
-                }
+        // ✅ CORREÇÃO: Adicionando verificação para 'bracketData[roundName]' ser definido
+        if (bracketData[roundName]) { // Garante que a rodada existe no bracketData
+            bracketData[roundName].forEach(match => {
+                if (match.winner) {
+                    // Add win to winner
+                    if (teamPoints[match.winner]) {
+                        teamPoints[match.winner].wins++;
+                    }
 
-                // Define phase reached for the winner
-                if (teamPoints[match.winner] && r < config.rounds.length) {
-                    teamPoints[match.winner].faseReached = roundName;
-                }
+                    // Define phase reached for the winner
+                    if (teamPoints[match.winner] && r < config.rounds.length) {
+                        teamPoints[match.winner].faseReached = roundName;
+                    }
 
-                // Define phase reached for the loser
-                const loser = (match.winner === match.team1) ? match.team2 : match.team1;
-                if (teamPoints[loser]) {
-                    teamPoints[loser].faseReached = roundName;
+                    // Define phase reached for the loser
+                    const loser = (match.winner === match.team1) ? match.team2 : match.team1;
+                    if (teamPoints[loser]) {
+                        teamPoints[loser].faseReached = roundName;
+                    }
                 }
-            }
-        });
+            });
+        }
     }
     // Calculate final points based on wins and phase reached
     for (const teamName in teamPoints) {
