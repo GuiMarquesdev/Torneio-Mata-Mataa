@@ -211,17 +211,14 @@ function generateBracket() {
     const config = tournamentConfigs[tournamentType];
 
     if (!config || selectedTeams.length !== config.totalTeams) {
-        // Substituído alert por popup customizado
         showCustomAlert(`Por favor, selecione exatamente ${config.totalTeams} times para gerar o chaveamento.`);
         return;
     }
 
-    // Removed resetTournamentData() call from here as it was causing selectedTeams to be emptied.
     bracketData = {};
     const shuffledTeams = shuffleArray([...selectedTeams]);
     let currentRoundTeams = [...shuffledTeams];
     bracketData[config.rounds[0]] = [];
-    console.log(bracketData); // For debugging
 
     for (let i = 0; i < config.matchesPerRound[0]; i++) {
         const team1 = currentRoundTeams.shift();
@@ -243,14 +240,13 @@ function generateBracket() {
 
     // Link subsequent matches (structure the bracket)
     for (let r = 0; r < config.rounds.length - 1; r++) {
-        const currentRoundName = config.rounds[r]; // Define currentRoundName
-        const nextRoundName = config.rounds[r + 1]; // Use nextRoundName for clarity
+        const currentRoundName = config.rounds[r];
+        const nextRoundName = config.rounds[r + 1];
         let nextMatchIndex = 0;
 
         for (let i = 0; i < bracketData[currentRoundName].length; i++) {
             const match = bracketData[currentRoundName][i];
 
-            // Every two matches, they feed into a next match
             if (i % 2 === 0) {
                 if (!bracketData[nextRoundName][nextMatchIndex]) {
                     bracketData[nextRoundName][nextMatchIndex] = {
@@ -332,11 +328,19 @@ function renderBracket(config) {
     });
 }
 
+/**
+ * Determines the winner of a match based on scores.
+ * Returns the winning team's name, or null if it's a tie.
+ * @param {number} score1 - Score of team 1.
+ * @param {number} score2 - Score of team 2.
+ * @param {string} team1 - Name of team 1.
+ * @param {string} team2 - Name of team 2.
+ * @returns {string|null} The winning team's name or null if tied.
+ */
 function getWinner(score1, score2, team1, team2) {
     if (score1 > score2) return team1;
     if (score2 > score1) return team2;
-
-    return Math.random() > 0.5 ? team1 : team2;
+    return null; // Indicates a tie
 }
 
 function generateRandomScore() {
@@ -358,30 +362,38 @@ function simulateMatch() {
                 match.score2 = generateRandomScore();
                 match.winner = getWinner(match.score1, match.score2, match.team1, match.team2);
 
+                if (match.winner === null) {
+                    // Removido o popup de aviso e o prompt. A prorrogação agora é automática.
+                    simulateGoldenGoalExtraTime(match);
+                } else {
+                    match.extraTime = false;
+                }
+
                 updateMatchUI(match);
 
-                // Advance the winner to the next phase
-                if (match.nextMatchId) {
-                    const [nextRoundIndex, nextMatchIndex] = match.nextMatchId.split('-').slice(1).map(Number);
-                    const nextRoundName = config.rounds[nextRoundIndex];
-                    const nextMatch = bracketData[nextRoundName][nextMatchIndex];
+                if (match.winner) {
+                    if (match.nextMatchId) {
+                        const [nextRoundIndex, nextMatchIndex] = match.nextMatchId.split('-').slice(1).map(Number);
+                        const nextRoundName = config.rounds[nextRoundIndex];
+                        const nextMatch = bracketData[nextRoundName][nextMatchIndex];
 
-                    if (!nextMatch) {
-                        console.error("Próxima partida não encontrada:", match.nextMatchId);
-                        return;
+                        if (!nextMatch) {
+                            console.error("Próxima partida não encontrada:", match.nextMatchId);
+                            return;
+                        }
+
+                        if (i % 2 === 0) {
+                            nextMatch.team1 = match.winner;
+                        } else {
+                            nextMatch.team2 = match.winner;
+                        }
+
+                        updateMatchUI(nextMatch);
+                    } else {
+                        document.getElementById('championName').textContent = match.winner;
+                        document.getElementById('championSection').style.display = 'block';
+                        document.getElementById('simulateBtn').disabled = true;
                     }
-
-                    if (match.id.endsWith('0') || match.id.endsWith('2') || match.id.endsWith('4') || match.id.endsWith('6')) { // Primeiro time do par
-                        nextMatch.team1 = match.winner;
-                    } else { // Segundo time do par
-                        nextMatch.team2 = match.winner;
-                    }
-
-                    updateMatchUI(nextMatch);
-                } else {
-                    document.getElementById('championName').textContent = match.winner;
-                    document.getElementById('championSection').style.display = 'block';
-                    document.getElementById('simulateBtn').disabled = true;
                 }
 
                 calculateAllPoints();
@@ -392,7 +404,6 @@ function simulateMatch() {
     }
 
     if (!nextMatchFound) {
-        // Substituído alert por popup customizado
         showCustomAlert("Todas as partidas foram simuladas! O torneio terminou.");
         document.getElementById('simulateBtn').disabled = true;
     }
@@ -405,15 +416,23 @@ function updateMatchUI(match) {
     const team1Div = matchDiv.querySelector('.team:first-child');
     const team2Div = matchDiv.querySelector('.team:last-child');
 
-    team1Div.querySelector('.team-name').textContent = match.team1 || 'Aguardando...';
-    team1Div.querySelector('.team-score').textContent = match.score1 !== null ? match.score1 : '-';
+    matchDiv.classList.remove('completed', 'extra-time');
+    team1Div.classList.remove('winner', 'loser', 'tied');
+    team2Div.classList.remove('winner', 'loser', 'tied');
 
+    team1Div.querySelector('.team-name').textContent = match.team1 || 'Aguardando...';
     team2Div.querySelector('.team-name').textContent = match.team2 || 'Aguardando...';
-    team2Div.querySelector('.team-score').textContent = match.score2 !== null ? match.score2 : '-';
+
+    team1Div.querySelector('.team-score').textContent = match.score1 !== null ? `${match.score1}${match.extraTime ? ' (ET)' : ''}` : '-';
+    team2Div.querySelector('.team-score').textContent = match.score2 !== null ? `${match.score2}${match.extraTime ? ' (ET)' : ''}` : '-';
 
 
     if (match.winner) {
         matchDiv.classList.add('completed');
+        if (match.extraTime) {
+            matchDiv.classList.add('extra-time');
+        }
+
         if (match.winner === match.team1) {
             team1Div.classList.add('winner');
             team2Div.classList.add('loser');
@@ -421,6 +440,12 @@ function updateMatchUI(match) {
             team2Div.classList.add('winner');
             team1Div.classList.add('loser');
         }
+    } else if (match.score1 !== null && match.score2 !== null && match.score1 === match.score2) {
+        matchDiv.classList.add('completed');
+        team1Div.classList.add('tied');
+        team2Div.classList.add('tied');
+        team1Div.querySelector('.team-name').textContent = `${match.team1} (Empate)`;
+        team2Div.querySelector('.team-name').textContent = `${match.team2} (Empate)`;
     } else if (!match.team1 || !match.team2) {
         matchDiv.classList.add('empty-slot');
     }
@@ -434,19 +459,19 @@ function manuallySetScore(matchId) {
     const match = bracketData[roundName][matchIndex];
 
     if (!match || !match.team1 || !match.team2 || match.winner) {
-        return;
+        if (!match.team1 || !match.team2) {
+            showCustomAlert("Esta partida ainda não tem times definidos.");
+            return;
+        }
     }
 
-    // Use custom prompt-like behavior or a custom modal for input if needed
-    // Por enquanto, mantendo prompt, pois é para entrada de dados, não apenas alerta.
-    let score1 = prompt(`Digite o placar para ${match.team1}:`);
-    let score2 = prompt(`Digite o placar para ${match.team2}:`);
+    let score1Input = prompt(`Digite o placar para ${match.team1}:`);
+    let score2Input = prompt(`Digite o placar para ${match.team2}:`);
 
-    score1 = parseInt(score1);
-    score2 = parseInt(score2);
+    let score1 = parseInt(score1Input);
+    let score2 = parseInt(score2Input);
 
     if (isNaN(score1) || isNaN(score2) || score1 < 0 || score2 < 0) {
-        // Substituído alert por popup customizado
         showCustomAlert("Placares inválidos. Por favor, insira números não negativos.");
         return;
     }
@@ -455,29 +480,39 @@ function manuallySetScore(matchId) {
     match.score2 = score2;
     match.winner = getWinner(score1, score2, match.team1, match.team2);
 
+    if (match.winner === null) {
+        // Removido o popup de aviso e o prompt. A prorrogação agora é automática.
+        simulateGoldenGoalExtraTime(match);
+    } else {
+        match.extraTime = false;
+    }
+
     updateMatchUI(match);
 
-    // Logic to advance the winner to the next phase (copy from simulateMatch)
-    if (match.nextMatchId) {
-        const [nextRoundIndex, nextMatchIndex] = match.nextMatchId.split('-').slice(1).map(Number);
-        const nextRoundName = config.rounds[nextRoundIndex];
-        const nextMatch = bracketData[nextRoundName][nextMatchIndex];
+    if (match.winner) {
+        if (match.nextMatchId) {
+            const [nextRoundIndex, nextMatchIndex] = match.nextMatchId.split('-').slice(1).map(Number);
+            const nextRoundName = config.rounds[nextRoundIndex];
+            const nextMatch = bracketData[nextRoundName][nextMatchIndex];
 
-        if (!nextMatch) {
-            console.error("Próxima partida não encontrada:", match.nextMatchId);
-            return;
-        }
+            if (!nextMatch) {
+                console.error("Próxima partida não encontrada:", match.nextMatchId);
+                return;
+            }
 
-        if (match.id.endsWith('0') || match.id.endsWith('2') || match.id.endsWith('4') || match.id.endsWith('6')) {
-            nextMatch.team1 = match.winner;
+            if (i % 2 === 0) {
+                nextMatch.team1 = match.winner;
+            } else {
+                nextMatch.team2 = match.winner;
+            }
+            updateMatchUI(nextMatch);
         } else {
-            nextMatch.team2 = match.winner;
+            document.getElementById('championName').textContent = match.winner;
+            document.getElementById('championSection').style.display = 'block';
+            document.getElementById('simulateBtn').disabled = true;
         }
-        updateMatchUI(nextMatch);
     } else {
-        document.getElementById('championName').textContent = match.winner;
-        document.getElementById('championSection').style.display = 'block';
-        document.getElementById('simulateBtn').disabled = true;
+        showCustomAlert(`A partida entre ${match.team1} e ${match.team2} ainda está empatada. Resolva o empate para continuar.`);
     }
 
     calculateAllPoints();
@@ -488,9 +523,6 @@ function calculateAllPoints() {
     const tournamentType = document.getElementById('tournamentSelect').value;
     const config = tournamentConfigs[tournamentType];
 
-    // ✅ CORREÇÃO: Adicionando verificação para 'config' ser definido
-    // Se a configuração do torneio não foi carregada (dropdown vazio),
-    // não há dados para calcular pontos, então a função retorna.
     if (!config) {
         return;
     }
@@ -504,45 +536,47 @@ function calculateAllPoints() {
         };
     });
 
-    // Calculate wins and phase reached
     for (let r = 0; r < config.rounds.length; r++) {
         const roundName = config.rounds[r];
-        // ✅ CORREÇÃO: Adicionando verificação para 'bracketData[roundName]' ser definido
-        if (bracketData[roundName]) { // Garante que a rodada existe no bracketData
+        if (bracketData[roundName]) {
             bracketData[roundName].forEach(match => {
                 if (match.winner) {
-                    // Add win to winner
                     if (teamPoints[match.winner]) {
                         teamPoints[match.winner].wins++;
                     }
 
-                    // Define phase reached for the winner
                     if (teamPoints[match.winner] && r < config.rounds.length) {
                         teamPoints[match.winner].faseReached = roundName;
                     }
 
-                    // Define phase reached for the loser
                     const loser = (match.winner === match.team1) ? match.team2 : match.team1;
                     if (teamPoints[loser]) {
                         teamPoints[loser].faseReached = roundName;
+                    }
+                } else if (match.score1 !== null && match.score2 !== null && match.score1 === match.score2) {
+                    if (teamPoints[match.team1]) {
+                        teamPoints[match.team1].faseReached = roundName;
+                    }
+                    if (teamPoints[match.team2]) {
+                        teamPoints[match.team2].faseReached = roundName;
                     }
                 }
             });
         }
     }
-    // Calculate final points based on wins and phase reached
     for (const teamName in teamPoints) {
         const teamData = teamPoints[teamName];
         teamData.points = teamData.wins * pointsMultiplier;
 
-        // Add extra points for phase reached (e.g., semifinalist, finalist, champion)
         const roundNames = config.rounds;
-        if (teamData.faseReached === roundNames[roundNames.length - 1] && teamPoints[teamName].wins > 0) {
+        const totalRounds = roundNames.length;
+
+        if (teamData.faseReached === roundNames[totalRounds - 1] && teamData.wins === totalRounds) {
             teamData.points += pointsMultiplier * 2;
             document.getElementById('championTeam').textContent = teamName;
-        } else if (roundNames.length >= 2 && teamData.faseReached === roundNames[roundNames.length - 2]) {
+        } else if (totalRounds >= 2 && teamData.faseReached === roundNames[totalRounds - 1] && teamData.wins === totalRounds - 1) {
             teamData.points += pointsMultiplier;
-        } else if (roundNames.length >= 3 && teamData.faseReached === roundNames[roundNames.length - 3]) {
+        } else if (totalRounds >= 3 && teamData.faseReached === roundNames[totalRounds - 2]) {
 
         }
     }
