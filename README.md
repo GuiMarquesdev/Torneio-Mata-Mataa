@@ -32,15 +32,3 @@ O projeto é modular, com os arquivos separados para facilitar a manutenção:
 ├── index.html          # Estrutura principal da página
 ├── style.css           # Estilos e responsividade
 └── script.js           # Toda a lógica JavaScript
-
-🖥️ Como Executar
-Clone este repositório para a sua máquina local:
-git clone https://github.com/seu-usuario/seu-repositorio.git
-
-Navegue até a pasta do projeto:
-cd sistema-torneio-mata-mata
-
-Abra o arquivo index.html em qualquer navegador web moderno.
-
-🤝 Contribuições
-Contribuições são 
